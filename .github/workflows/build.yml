@@ -1,0 +1,32 @@
+name: Build VOID CLIENT
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '*.zip'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          mkdir project
+          unzip -o VOID-CLIENT-Fabric-1.21.11-fixed.zip -d project
+          cp -a project/. .
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build mod
+        run: chmod +x gradlew && ./gradlew build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VOID-CLIENT
+          path: build/libs/*.jar
